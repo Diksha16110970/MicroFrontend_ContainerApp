@@ -1,4 +1,5 @@
 // lib/auth.ts
+"use client";
 import Cookies from "js-cookie";
 
 const AUTH_COOKIE = "auth-token";
