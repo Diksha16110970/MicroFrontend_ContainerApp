@@ -1,32 +1,25 @@
 const { NextFederationPlugin } = require("@module-federation/nextjs-mf");
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Required when deploying to Vercel with module federation
-  output: "standalone",
+module.exports = {
+  webpack(config: any, options: any) {
+    const { isServer } = options; 
 
-  webpack(config: { plugins: any[]; }, { isServer }: any) {
     config.plugins.push(
       new NextFederationPlugin({
-        name: "remote2",
+        name: "container", 
         filename: "static/chunks/remoteEntry.js",
-        exposes: {
-          "./RemotePage": "./src/pages/index.tsx",
+        remotes: {
+          dashboard: `dashboard@http://localhost:3001/_next/static/${isServer ? "ssr" : "chunks"}/remoteEntry.js`,
+          remote2: `remote2@http://localhost:3002/_next/static/${isServer ? "ssr" : "chunks"}/remoteEntry.js`,
         },
+        exposes: {},
         shared: {
-          react: { singleton: true, requiredVersion: false, eager: true },
-          "react-dom": { singleton: true, requiredVersion: false, eager: true },
+          react: { singleton: true, requiredVersion: false },
+          "react-dom": { singleton: true, requiredVersion: false },
         },
       })
     );
 
     return config;
   },
-
-  // Extra stability (avoid esm externals issues in some Next.js 15 setups)
-  experimental: {
-    outputFileTracingRoot: __dirname, // 👈 fixes multiple lockfiles warning
-  },
 };
-
-module.exports = nextConfig;
