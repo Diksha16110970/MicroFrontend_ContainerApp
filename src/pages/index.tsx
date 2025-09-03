@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import Login from "./login";
 
 export default function Home() {
